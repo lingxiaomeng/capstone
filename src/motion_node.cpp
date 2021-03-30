@@ -25,12 +25,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cstdlib>
 #include <string>
 #include <opencv2/highgui/highgui.hpp>
+#include <sound_play.h>
 #include "opencv2/opencv.hpp"
 #include "ros/ros.h"
 #include "ros/console.h"
 #include "turtlebot.hpp"
 #include "line_follower_turtlebot/pos.h"
-
+#include <thread>
 
 /**
 *@brief Main function that reads direction from the detect node and publishes velocity to the turtlebot at a given rate
@@ -38,6 +39,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *@param argv is the array of arugments
 *@return 0
 */
+
+void say_word(std::string &words, sound_play::SoundClient &sc) {
+    sc.say(words);
+}
+
+
 int main(int argc, char **argv) {
     // Initializing node and object
     ros::init(argc, argv, "Velocity");
@@ -49,14 +56,20 @@ int main(int argc, char **argv) {
                                       1, &turtlebot::dir_sub, &bot);
 
     ros::Subscriber marker_sub = n.subscribe("/ar_pose_marker", 1, &turtlebot::get_pose, &bot);
+    sound_play::SoundClient sc;
 
     ros::Publisher pub = n.advertise<geometry_msgs::Twist>
             ("/cmd_vel", 10);
     ros::Rate rate(10);
+
     while (ros::ok()) {
         ros::spinOnce();
+        if (bot.say) {
+            std::string words = std::to_string(bot.marker_id);
+            std::thread th1(say_word, std::ref(words), std::ref(sc));
+        }
         // Publish velocity commands to turtlebot
-        bot.vel_cmd(velocity, pub, rate);
+//        bot.vel_cmd(velocity, pub, rate);
         rate.sleep();
     }
     return 0;

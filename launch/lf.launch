@@ -29,6 +29,6 @@
             if="$(arg StartRec)"
     />
 
-    <node type="rviz" name="rviz" pkg="rviz" args="-d /home/turtlepc-01/.rviz" />
+    <node type="rviz" name="rviz" pkg="rviz" args="-d /home/turtlepc-01/.rviz/default.rviz" />
 
 </launch>

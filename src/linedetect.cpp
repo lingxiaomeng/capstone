@@ -31,16 +31,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ros/console.h"
 #include "line_follower_turtlebot/pos.h"
 
-void LineDetect::imageCallback(const sensor_msgs::ImageConstPtr& msg) {
-  cv_bridge::CvImagePtr cv_ptr;
-  try {
-    cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-    img = cv_ptr->image;
-    cv::waitKey(30);
-  }
-  catch (cv_bridge::Exception& e) {
-    ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
-  }
+void LineDetect::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
+    cv_bridge::CvImagePtr cv_ptr;
+    try {
+        cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+        img = cv_ptr->image;
+        cv::waitKey(30);
+    }
+    catch (cv_bridge::Exception &e) {
+        ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
+    }
 }
 
 cv::Mat LineDetect::Gauss(cv::Mat input) {
@@ -60,10 +60,12 @@ int LineDetect::colorthresh(cv::Mat input) {
     // Detect all objects within the HSV range
     cv::cvtColor(input, LineDetect::img_hsv, CV_BGR2HSV);
     LineDetect::LowerYellow = {0, 0, 120};
-    LineDetect::UpperYellow = {180, 100, 255};
+    LineDetect::UpperYellow = {180, 90, 255};
     cv::inRange(LineDetect::img_hsv, LowerYellow,
                 UpperYellow, LineDetect::img_mask);
     img_mask(cv::Rect(0, 0, w, 0.8 * h)) = 0;
+    img_mask(cv::Rect(0.9 * w, 0, 0.1 * w, h)) = 0;
+
     // Find contours for better visualization
     cv::findContours(LineDetect::img_mask, v, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     // If contours exist add a bounding
@@ -93,9 +95,13 @@ int LineDetect::colorthresh(cv::Mat input) {
         cv::putText(input, "Line Detected", pt3,
                     CV_FONT_HERSHEY_COMPLEX, 1, CV_RGB(255, 0, 0));
     }
+    cv::namedWindow("masker View");
+
+    imshow("masker View", img_mask);
+
     // Mask image to limit the future turns affecting the output
-    img_mask(cv::Rect(0.7 * w, 0, 0.3 * w, h)) = 0;
-    img_mask(cv::Rect(0, 0, 0.3 * w, h)) = 0;
+//    img_mask(cv::Rect(0.7 * w, 0, 0.3 * w, h)) = 0;
+//    img_mask(cv::Rect(0, 0, 0.3 * w, h)) = 0;
     // Perform centroid detection of line
     cv::Moments M = cv::moments(LineDetect::img_mask);
     if (M.m00 > 0) {
@@ -106,17 +112,22 @@ int LineDetect::colorthresh(cv::Mat input) {
     // Tolerance to chooise directions
     auto tol = 15;
     auto count = cv::countNonZero(img_mask);
+//    ROS_INFO("cv: %f", c_x);
     // Turn left if centroid is to the left of the image center minus tolerance
     // Turn right if centroid is to the right of the image center plus tolerance
     // Go straight if centroid is near image center
-    if (c_x < w / 2 - tol) {
-        LineDetect::dir = 0;
-    } else if (c_x > w / 2 + tol) {
-        LineDetect::dir = 2;
-    } else {
-        LineDetect::dir = 1;
-    }
+
+    LineDetect::dx = w / 2 - c_x;
+//    if (c_x < w / 2 - tol) {
+//        LineDetect::dir = 0;
+//    } else if (c_x > w / 2 + tol) {
+//        LineDetect::dir = 2;
+//    } else {
+//        LineDetect::dir = 1;
+//    }
     // Search if no line detected
+    LineDetect::dir = 0;
+
     if (count == 0) {
         LineDetect::dir = 3;
     }

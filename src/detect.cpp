@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
 //            ROS_INFO("read image");
             det.img_filt = det.Gauss(det.img);
             msg.direction = det.colorthresh(det.img_filt);
+            msg.dx = det.dx;
             // Publish direction message
             dirPub.publish(msg);
         }

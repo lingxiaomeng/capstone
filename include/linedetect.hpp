@@ -39,6 +39,7 @@ public:
     cv::Mat img;  /// Input image in opencv matrix format
     cv::Mat img_filt;  /// Filtered image in opencv matrix format
     int dir;  /// Direction message to be published
+    double dx;
 
 /**
 *@brief Callback used to subscribe to the image topic from the Turtlebot and convert to opencv image format

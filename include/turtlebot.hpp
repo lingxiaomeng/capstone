@@ -38,6 +38,8 @@ public:
     int dir;  /// Direction message to read published directions
     int marker_id = -1;
     double marker_distance;
+    bool say = false;
+    double dx;
 
     void get_pose(ar_track_alvar_msgs::AlvarMarkers req);
 
