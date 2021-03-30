@@ -23,23 +23,32 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #pragma once
+
 #include <geometry_msgs/Twist.h>
 #include <vector>
 #include "ros/ros.h"
 #include "line_follower_turtlebot/pos.h"
+#include "ar_track_alvar_msgs/AlvarMarkers.h"
 
 /**
 *@brief Class turtlebot subscribes to the directions published and publishes velocity commands
 */
 class turtlebot {
- public:
+public:
     int dir;  /// Direction message to read published directions
-/**
+    int marker_id = -1;
+    double marker_distance;
+
+    void get_pose(ar_track_alvar_msgs::AlvarMarkers req);
+
+
+    /**
 *@brief Callback used to subscribe to the direction message published by the Line detection node
 *@param msg is the custom message pos which publishes a direction int between 0 and 3
 *@return none
 */
     void dir_sub(line_follower_turtlebot::pos msg);
+
 /**
 *@brief Function to publish velocity commands based on direction
 *@param velocity is the twist 
@@ -48,5 +57,5 @@ class turtlebot {
 *@return none
 */
     void vel_cmd(geometry_msgs::Twist &velocity,
-     ros::Publisher &pub, ros::Rate &rate);
+                 ros::Publisher &pub, ros::Rate &rate);
 };

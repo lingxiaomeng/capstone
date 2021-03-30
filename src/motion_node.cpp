@@ -46,9 +46,12 @@ int main(int argc, char **argv) {
     geometry_msgs::Twist velocity;
     // Creating subscriber and publisher
     ros::Subscriber sub = n.subscribe("/direction",
-        1, &turtlebot::dir_sub, &bot);
+                                      1, &turtlebot::dir_sub, &bot);
+
+    ros::Subscriber marker_sub = n.subscribe("/ar_pose_marker", 1, &turtlebot::get_pose, &bot);
+
     ros::Publisher pub = n.advertise<geometry_msgs::Twist>
-        ("/cmd_vel_mux/input/teleop", 10);
+            ("/cmd_vel", 10);
     ros::Rate rate(10);
     while (ros::ok()) {
         ros::spinOnce();

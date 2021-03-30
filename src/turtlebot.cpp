@@ -28,42 +28,78 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ros/console.h"
 #include "turtlebot.hpp"
 #include "line_follower_turtlebot/pos.h"
+#include "sound_play/sound_play.h"
+#include <string>
 
 void turtlebot::dir_sub(line_follower_turtlebot::pos msg) {
     turtlebot::dir = msg.direction;
 }
-void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
- ros::Publisher &pub, ros::Rate &rate) {
-    // If direction is left
-    if (turtlebot::dir == 0) {
-        velocity.linear.x = 0.1;
-        velocity.angular.z = 0.15;
-        pub.publish(velocity);
-        rate.sleep();
-        ROS_INFO_STREAM("Turning Left");
+
+void turtlebot::get_pose(ar_track_alvar_msgs::AlvarMarkers req) {
+    if (!req.markers.empty()) {
+        ROS_INFO("find marker");
+        double min_distance = 1e7;
+        int last_marker_id = marker_id;
+        for (auto &marker : req.markers) {
+            int id = marker.id;
+            double dis = marker.pose.pose.position.z;
+            ROS_INFO("find marker id: %d, distance %f", id, dis);
+            if (dis < min_distance) {
+                min_distance = dis;
+                marker_id = id;
+                marker_distance = min_distance;
+            }
+        }
+        if (last_marker_id != marker_id) {
+            sound_play::SoundClient sc;
+            std::string words = std::to_string(marker_id);
+            sc.say(words);
+        }
     }
-    // If direction is straight
-    if (turtlebot::dir == 1) {
-        velocity.linear.x = 0.15;
+}
+
+void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
+                        ros::Publisher &pub, ros::Rate &rate) {
+
+    // If direction is left
+
+    if (turtlebot::marker_id == 0) {
+        velocity.linear.x = 0;
         velocity.angular.z = 0;
         pub.publish(velocity);
         rate.sleep();
-        ROS_INFO_STREAM("Straight");
-    }
-    // If direction is right
-    if (turtlebot::dir == 2) {
-        velocity.linear.x = 0.1;
-        velocity.angular.z = -0.15;
-        pub.publish(velocity);
-        rate.sleep();
-        ROS_INFO_STREAM("Turning Right");
-    }
-    // If robot has to search
-    if (turtlebot::dir == 3) {
-        velocity.linear.x = 0;
-        velocity.angular.z = 0.25;
-        pub.publish(velocity);
-        rate.sleep();
-        ROS_INFO_STREAM("Searching");
+        ROS_INFO_STREAM("STOP");
+    } else {
+        if (turtlebot::dir == 0) {
+            velocity.linear.x = 0.1;
+            velocity.angular.z = 0.25;
+            pub.publish(velocity);
+            rate.sleep();
+            ROS_INFO_STREAM("Turning Left");
+        }
+        // If direction is straight
+        if (turtlebot::dir == 1) {
+            velocity.linear.x = 0.3;
+            velocity.angular.z = 0;
+            pub.publish(velocity);
+            rate.sleep();
+            ROS_INFO_STREAM("Straight");
+        }
+        // If direction is right
+        if (turtlebot::dir == 2) {
+            velocity.linear.x = 0.1;
+            velocity.angular.z = -0.25;
+            pub.publish(velocity);
+            rate.sleep();
+            ROS_INFO_STREAM("Turning Right");
+        }
+        // If robot has to search
+        if (turtlebot::dir == 3) {
+            velocity.linear.x = 0;
+            velocity.angular.z = 0.25;
+            pub.publish(velocity);
+            rate.sleep();
+            ROS_INFO_STREAM("Searching");
+        }
     }
 }

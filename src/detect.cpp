@@ -44,21 +44,25 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
     LineDetect det;
     // Creating Publisher and subscriber
-    ros::Subscriber sub = n.subscribe("/camera/rgb/image_raw",
-        1, &LineDetect::imageCallback, &det);
+    ros::Subscriber sub = n.subscribe("/raspicam_node/image",
+                                      1, &LineDetect::imageCallback, &det);
+
 
     ros::Publisher dirPub = n.advertise<
-    line_follower_turtlebot::pos>("direction", 1);
-        line_follower_turtlebot::pos msg;
+            line_follower_turtlebot::pos>("direction", 1);
+    line_follower_turtlebot::pos msg;
 
     while (ros::ok()) {
+//        ROS_INFO("no read image");
+
         if (!det.img.empty()) {
             // Perform image processing
+//            ROS_INFO("read image");
             det.img_filt = det.Gauss(det.img);
             msg.direction = det.colorthresh(det.img_filt);
             // Publish direction message
             dirPub.publish(msg);
-            }
+        }
         ros::spinOnce();
     }
     // Closing image viewer
