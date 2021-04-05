@@ -46,7 +46,7 @@ public:
 *@param msg is the image message for ROS
 *@return none
 */
-    void imageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void imageCallback(const sensor_msgs::CompressedImageConstPtr &msg);
 
 
 /**

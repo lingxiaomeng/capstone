@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ros/console.h"
 #include "line_follower_turtlebot/pos.h"
 
-void LineDetect::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
+void LineDetect::imageCallback(const sensor_msgs::CompressedImageConstPtr &msg) {
     cv_bridge::CvImagePtr cv_ptr;
     try {
         cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -39,7 +39,7 @@ void LineDetect::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         cv::waitKey(30);
     }
     catch (cv_bridge::Exception &e) {
-        ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
+        ROS_ERROR("Could not convert to 'bgr8'.");
     }
 }
 
@@ -60,9 +60,20 @@ int LineDetect::colorthresh(cv::Mat input) {
     // Detect all objects within the HSV range
     cv::cvtColor(input, LineDetect::img_hsv, CV_BGR2HSV);
     LineDetect::LowerYellow = {0, 0, 120};
-    LineDetect::UpperYellow = {180, 90, 255};
+    LineDetect::UpperYellow = {180, 50, 255};
     cv::inRange(LineDetect::img_hsv, LowerYellow,
                 UpperYellow, LineDetect::img_mask);
+
+    cv::Point pts[5] = {
+            cv::Point(1, 6),
+            cv::Point(2, 7),
+            cv::Point(3, 8),
+            cv::Point(4, 9),
+            cv::Point(5, 10)
+    };
+    cv::fillConvexPoly(img_mask, pts, 5, cv::Scalar(1));
+
+
     img_mask(cv::Rect(0, 0, w, 0.8 * h)) = 0;
     img_mask(cv::Rect(0.9 * w, 0, 0.1 * w, h)) = 0;
 
@@ -117,7 +128,7 @@ int LineDetect::colorthresh(cv::Mat input) {
     // Turn right if centroid is to the right of the image center plus tolerance
     // Go straight if centroid is near image center
 
-    LineDetect::dx = w / 2 - c_x;
+    LineDetect::dx = w / 2 - c_x + 20;
 //    if (c_x < w / 2 - tol) {
 //        LineDetect::dir = 0;
 //    } else if (c_x > w / 2 + tol) {

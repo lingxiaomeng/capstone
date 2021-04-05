@@ -44,8 +44,8 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
     LineDetect det;
     // Creating Publisher and subscriber
-    ros::Subscriber sub = n.subscribe("/raspicam_node/image",
-                                      1, &LineDetect::imageCallback, &det);
+    ros::Subscriber sub = n.subscribe("/raspicam_node/image/compressed",
+                                      15, &LineDetect::imageCallback, &det);
 
 
     ros::Publisher dirPub = n.advertise<

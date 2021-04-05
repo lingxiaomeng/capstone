@@ -51,11 +51,14 @@ void turtlebot::get_pose(ar_track_alvar_msgs::AlvarMarkers req) {
             }
         }
         if (last_marker_id != marker_id) {
+            ROS_INFO("find marker id %d", marker_id);
             turtlebot::say = true;
         } else {
-            turtlebot::say = true;
+            turtlebot::say = false;
         }
     }
+//    turtlebot::say = false;
+//    marker_id = -1;
 }
 
 void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
@@ -63,12 +66,14 @@ void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
 
     // If direction is left
 
-    if (turtlebot::marker_id == 0) {
+    if (turtlebot::marker_id == 0 && turtlebot::marker_distance < 0.5) {
+
         velocity.linear.x = 0;
         velocity.angular.z = 0;
         pub.publish(velocity);
         rate.sleep();
         ROS_INFO_STREAM("STOP");
+
     } else {
 //        if (turtlebot::dir == 0) {
 //            velocity.linear.x = 0.1;
@@ -93,16 +98,20 @@ void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
 //            rate.sleep();
 //            ROS_INFO_STREAM("Turning Right");
 //        }
-        // If robot has to search
+// If robot has to search
         if (turtlebot::dir == 3) {
-            velocity.linear.x = 0;
-            velocity.angular.z = 0.25;
+            velocity.linear.
+                    x = 0;
+            velocity.angular.
+                    z = 0.25;
             pub.publish(velocity);
             rate.sleep();
             ROS_INFO_STREAM("Searching");
         } else {
-            velocity.angular.z = turtlebot::dx / 210.0 * 0.4;
-            velocity.linear.x = 0.22 - abs(turtlebot::dx) / 210 * 0.22 - 0.02;
+            velocity.angular.
+                    z = turtlebot::dx / 210.0 * 1.5;
+            velocity.linear.
+                    x = (1 - abs(turtlebot::dx) / 500) * 0.22;
             ROS_INFO("vx:%f, vz:%f", velocity.linear.x, velocity.angular.z);
             pub.publish(velocity);
             rate.sleep();

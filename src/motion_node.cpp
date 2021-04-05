@@ -40,10 +40,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *@return 0
 */
 
-void say_word(std::string &words, sound_play::SoundClient &sc) {
-    sc.say(words);
-}
-
 
 int main(int argc, char **argv) {
     // Initializing node and object
@@ -55,21 +51,25 @@ int main(int argc, char **argv) {
     ros::Subscriber sub = n.subscribe("/direction",
                                       1, &turtlebot::dir_sub, &bot);
 
-    ros::Subscriber marker_sub = n.subscribe("/ar_pose_marker", 1, &turtlebot::get_pose, &bot);
+    ros::Subscriber marker_sub = n.subscribe("/ar_pose_marker", 10, &turtlebot::get_pose, &bot);
     sound_play::SoundClient sc;
 
     ros::Publisher pub = n.advertise<geometry_msgs::Twist>
             ("/cmd_vel", 10);
-    ros::Rate rate(10);
+    ros::Rate rate(15);
 
     while (ros::ok()) {
         ros::spinOnce();
         if (bot.say) {
+            ROS_INFO("say");
+            bot.say = false;
             std::string words = std::to_string(bot.marker_id);
-            std::thread th1(say_word, std::ref(words), std::ref(sc));
+//            std::thread th1(say_word, std::ref(words), std::ref(sc));
+            sc.say(words);
+
         }
         // Publish velocity commands to turtlebot
-//        bot.vel_cmd(velocity, pub, rate);
+        bot.vel_cmd(velocity, pub, rate);
         rate.sleep();
     }
     return 0;

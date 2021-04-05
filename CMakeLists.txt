@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS cv_bridge roscpp rospy std_msgs genmsg g
 find_package(OpenCV REQUIRED)
 
 ## Declare ROS messages and services
-add_message_files(FILES pos.msg)
+add_message_files(FILES pos.msg sound.msg)
 
 ## Generate added messages and services
 generate_messages(DEPENDENCIES std_msgs)
