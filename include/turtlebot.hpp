@@ -40,6 +40,7 @@ public:
     double marker_distance;
     bool say = false;
     double dx;
+    int timer = 0;
 
     void get_pose(ar_track_alvar_msgs::AlvarMarkers req);
 

@@ -36,6 +36,7 @@ void turtlebot::dir_sub(line_follower_turtlebot::pos msg) {
 }
 
 void turtlebot::get_pose(ar_track_alvar_msgs::AlvarMarkers req) {
+    timer++;
     if (!req.markers.empty()) {
         ROS_INFO("find marker");
         double min_distance = 1e7;
@@ -46,13 +47,18 @@ void turtlebot::get_pose(ar_track_alvar_msgs::AlvarMarkers req) {
             ROS_INFO("find marker id: %d, distance %f", id, dis);
             if (dis < min_distance) {
                 min_distance = dis;
+//                if (min_distance < 5) {
                 marker_id = id;
                 marker_distance = min_distance;
+//                }
             }
         }
-        if (last_marker_id != marker_id) {
-            ROS_INFO("find marker id %d", marker_id);
-            turtlebot::say = true;
+        if (timer > 30) {
+            if (min_distance < 2) {
+//            ROS_INFO("find marker id %d", marker_id);
+                turtlebot::say = true;
+                timer = 0;
+            }
         } else {
             turtlebot::say = false;
         }
@@ -65,56 +71,41 @@ void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
                         ros::Publisher &pub, ros::Rate &rate) {
 
     // If direction is left
+    double stop_distance = 0.11;
+    if (turtlebot::marker_id == 0 && turtlebot::marker_distance < 0.7 && turtlebot::marker_distance > stop_distance) {
+        velocity.angular.z = turtlebot::dx / 210.0 * 1;
+        velocity.linear.x = (1 - abs(turtlebot::dx) / 350) * 0.18;
 
-    if (turtlebot::marker_id == 0 && turtlebot::marker_distance < 0.5) {
+        turtlebot::marker_distance -= velocity.linear.x * 1 / 15;
 
-        velocity.linear.x = 0;
-        velocity.angular.z = 0;
         pub.publish(velocity);
-        rate.sleep();
-        ROS_INFO_STREAM("STOP");
-
+//            rate.sleep();
+        ROS_INFO("STOP distance %f", turtlebot::marker_distance);
+    } else if (turtlebot::marker_id == 0 && turtlebot::marker_distance < stop_distance) {
+        velocity.angular.z = 0;
+        velocity.linear.x = 0;
+        pub.publish(velocity);
+//            rate.sleep();
+        ROS_INFO("STOP distance %f", turtlebot::marker_distance);
     } else {
-//        if (turtlebot::dir == 0) {
-//            velocity.linear.x = 0.1;
-//            velocity.angular.z = 0.25;
-//            pub.publish(velocity);
-//            rate.sleep();
-//            ROS_INFO_STREAM("Turning Left");
-//        }
-//        // If direction is straight
-//        if (turtlebot::dir == 1) {
-//            velocity.linear.x = 0.3;
-//            velocity.angular.z = 0;
-//            pub.publish(velocity);
-//            rate.sleep();
-//            ROS_INFO_STREAM("Straight");
-//        }
-//        // If direction is right
-//        if (turtlebot::dir == 2) {
-//            velocity.linear.x = 0.1;
-//            velocity.angular.z = -0.25;
-//            pub.publish(velocity);
-//            rate.sleep();
-//            ROS_INFO_STREAM("Turning Right");
-//        }
-// If robot has to search
-        if (turtlebot::dir == 3) {
+        if (abs(dx) < 50) {
+            velocity.angular.
+                    z = turtlebot::dx / 210.0 * 1;
             velocity.linear.
-                    x = 0;
+                    x = (1 - abs(turtlebot::dx) / 450) * 0.22;
+        } else if (abs(dx) < 250) {
             velocity.angular.
-                    z = 0.25;
-            pub.publish(velocity);
-            rate.sleep();
-            ROS_INFO_STREAM("Searching");
-        } else {
-            velocity.angular.
-                    z = turtlebot::dx / 210.0 * 1.5;
+                    z = turtlebot::dx / 210.0 * 1.7;
             velocity.linear.
                     x = (1 - abs(turtlebot::dx) / 500) * 0.22;
-            ROS_INFO("vx:%f, vz:%f", velocity.linear.x, velocity.angular.z);
-            pub.publish(velocity);
-            rate.sleep();
+        } else {
+            velocity.angular.z = 0;
+            velocity.linear.x = 0;
         }
+        ROS_INFO("vx:%f, vz:%f", velocity.linear.x, velocity.angular.z);
+        pub.publish(velocity);
+//            rate.sleep();
     }
 }
+
+
