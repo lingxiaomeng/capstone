@@ -4,7 +4,8 @@ project(line_follower_turtlebot)
 add_definitions(-std=c++11)
 
 ## Find catkin and any catkin packages
-find_package(catkin REQUIRED COMPONENTS cv_bridge roscpp rospy std_msgs genmsg geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS cv_bridge roscpp rospy std_msgs genmsg geometry_msgs actionlib_msgs actionlib
+        sensor_msgs)
 find_package(OpenCV REQUIRED)
 
 ## Declare ROS messages and services
@@ -18,6 +19,10 @@ catkin_package()
 ## Executables
 include_directories(include ${catkin_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+add_executable(project src/goal.cpp src/linedetect.cpp)
+target_link_libraries(project ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(project line_follower_turtlebot_generate_messages_cpp)
 
 
 add_executable(detect src/detect.cpp src/linedetect.cpp)

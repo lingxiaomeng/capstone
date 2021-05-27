@@ -71,10 +71,10 @@ void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
                         ros::Publisher &pub, ros::Rate &rate) {
 
     // If direction is left
-    double stop_distance = 0.11;
+    double stop_distance = 0.13;
     if (turtlebot::marker_id == 0 && turtlebot::marker_distance < 0.7 && turtlebot::marker_distance > stop_distance) {
         velocity.angular.z = turtlebot::dx / 210.0 * 1;
-        velocity.linear.x = (1 - abs(turtlebot::dx) / 350) * 0.18;
+        velocity.linear.x = (1 - abs(turtlebot::dx) / 350) * 0.2;
 
         turtlebot::marker_distance -= velocity.linear.x * 1 / 15;
 
@@ -92,7 +92,7 @@ void turtlebot::vel_cmd(geometry_msgs::Twist &velocity,
             velocity.angular.
                     z = turtlebot::dx / 210.0 * 1;
             velocity.linear.
-                    x = (1 - abs(turtlebot::dx) / 450) * 0.22;
+                    x = (1 - abs(turtlebot::dx) / 500) * 0.22;
         } else if (abs(dx) < 250) {
             velocity.angular.
                     z = turtlebot::dx / 210.0 * 1.7;
