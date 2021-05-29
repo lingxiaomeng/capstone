@@ -59,8 +59,8 @@ int LineDetect::colorthresh(cv::Mat input) {
     auto c_x = 0.0;
     // Detect all objects within the HSV range
     cv::cvtColor(input, LineDetect::img_hsv, CV_BGR2HSV);
-    LineDetect::LowerYellow = {0, 0, 120};
-    LineDetect::UpperYellow = {180, 50, 255};
+    LineDetect::LowerYellow = {0, 0, 0};
+    LineDetect::UpperYellow = {180, 255, 60};
     cv::inRange(LineDetect::img_hsv, LowerYellow,
                 UpperYellow, LineDetect::img_mask);
 
@@ -75,7 +75,8 @@ int LineDetect::colorthresh(cv::Mat input) {
 
 
     img_mask(cv::Rect(0, 0, w, 0.8 * h)) = 0;
-    img_mask(cv::Rect(0.9 * w, 0, 0.1 * w, h)) = 0;
+    img_mask(cv::Rect(0.7 * w, 0, 0.3 * w, h)) = 0;
+    img_mask(cv::Rect(0, 0, 0.3 * w, h)) = 0;
 
     // Find contours for better visualization
     cv::findContours(LineDetect::img_mask, v, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
@@ -106,9 +107,9 @@ int LineDetect::colorthresh(cv::Mat input) {
         cv::putText(input, "Line Detected", pt3,
                     CV_FONT_HERSHEY_COMPLEX, 1, CV_RGB(255, 0, 0));
     }
-    cv::namedWindow("masker View");
+//    cv::namedWindow("masker View");
 
-    imshow("masker View", img_mask);
+//    imshow("masker View", img_mask);
 
     // Mask image to limit the future turns affecting the output
 //    img_mask(cv::Rect(0.7 * w, 0, 0.3 * w, h)) = 0;
@@ -143,7 +144,7 @@ int LineDetect::colorthresh(cv::Mat input) {
         LineDetect::dir = 3;
     }
     // Output images viewed by the turtlebot
-    cv::namedWindow("Turtlebot View");
-    imshow("Turtlebot View", input);
+//    cv::namedWindow("Turtlebot View");
+//    imshow("Turtlebot View", input);
     return LineDetect::dir;
 }

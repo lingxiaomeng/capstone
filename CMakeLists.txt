@@ -24,6 +24,11 @@ add_executable(project src/goal.cpp src/linedetect.cpp)
 target_link_libraries(project ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(project line_follower_turtlebot_generate_messages_cpp)
 
+add_executable(project_line src/goal_line.cpp src/linedetect.cpp)
+target_link_libraries(project_line ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(project_line line_follower_turtlebot_generate_messages_cpp)
+
+
 
 add_executable(detect src/detect.cpp src/linedetect.cpp)
 target_link_libraries(detect ${catkin_LIBRARIES} ${OpenCV_LIBS})

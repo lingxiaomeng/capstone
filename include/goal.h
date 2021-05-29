@@ -18,6 +18,9 @@ int timer = 0;
 int marker_id  = 0;
 bool say = true;
 
+int LINE_FOLLOW =7;
+
+
 class goal {
 
 };
