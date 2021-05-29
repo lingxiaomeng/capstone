@@ -14,6 +14,10 @@ int PS4 = 4;
 int MARKER1 = 5;
 int MARKER2 = 6;
 
+int timer = 0;
+int marker_id  = 0;
+bool say = true;
+
 class goal {
 
 };
