@@ -12,7 +12,7 @@
     <include file="$(find sound_play)/soundplay_node.launch"/>
 <!--    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch"/>-->
 
-    <node pkg="line_follower_turtlebot" name="goal" type="project" cwd="node" output="screen"/>
+    <node pkg="line_follower_turtlebot" name="section1" type="section1" cwd="node" output="screen"/>
 
     <!-- Robot commands node -->
 <!--    <node pkg="line_follower_turtlebot" name="Velocity" type="navig" cwd="node" output="screen"/>-->

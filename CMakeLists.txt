@@ -20,13 +20,13 @@ catkin_package()
 include_directories(include ${catkin_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_executable(project src/section2.cpp src/linedetect.cpp)
-target_link_libraries(project ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(project line_follower_turtlebot_generate_messages_cpp)
+add_executable(section2 src/section2.cpp src/linedetect.cpp)
+target_link_libraries(section2 ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(section2 line_follower_turtlebot_generate_messages_cpp)
 
-add_executable(project_line src/section1.cpp src/linedetect.cpp)
-target_link_libraries(project_line ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(project_line line_follower_turtlebot_generate_messages_cpp)
+add_executable(section1 src/section1.cpp src/linedetect.cpp)
+target_link_libraries(section1 ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(section1 line_follower_turtlebot_generate_messages_cpp)
 
 
 
