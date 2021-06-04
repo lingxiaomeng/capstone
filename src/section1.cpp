@@ -1,36 +1,42 @@
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
-#include <goal.h>
+#include <section2.h>
 #include <ar_track_alvar_msgs/AlvarMarkers.h>
 #include <sound_play.h>
-#include <linedetect.hpp>
-#include <geometry_msgs/Twist.h>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
-double distance = 0;
 
-void vel_cmd(geometry_msgs::Twist &velocity,
-             ros::Publisher &pub, double dx) {
-    if (abs(dx) < 50) {
-        velocity.angular.
-                z = dx / 210.0 * 1;
-        velocity.linear.
-                x = (1 - abs(dx) / 500) * 0.22;
-    } else if (abs(dx) < 250) {
-        velocity.angular.
-                z = dx / 210.0 * 1.7;
-        velocity.linear.
-                x = (1 - abs(dx) / 500) * 0.22;
-    } else {
-        velocity.angular.z = 0;
-        velocity.linear.x = 0;
+void get_pose(const ar_track_alvar_msgs::AlvarMarkers &req) {
+    timer++;
+    if (!req.markers.empty()) {
+        ROS_INFO("find marker");
+        double min_distance = 1e7;
+        int last_marker_id = marker_id;
+        for (auto &marker : req.markers) {
+            int id = marker.id;
+            double dis = marker.pose.pose.position.z;
+            ROS_INFO("find marker id: %d, distance %f", id, dis);
+            if (dis < min_distance) {
+                min_distance = dis;
+//                if (min_distance < 5) {
+                marker_id = id;
+//                }
+            }
+        }
+        if (timer > 30) {
+            if (min_distance < 2) {
+//            ROS_INFO("find marker id %d", marker_id);
+                say = true;
+                timer = 0;
+            }
+        } else {
+            say = false;
+        }
     }
-    ROS_INFO("vx:%f, vz:%f", velocity.linear.x, velocity.angular.z);
-    pub.publish(velocity);
-    distance += velocity.linear.x * 1 / 15;
-//            rate.sleep();
+//    turtlebot::say = false;
+//    marker_id = -1;
 }
 
 
@@ -42,17 +48,6 @@ int main(int argc, char **argv) {
     sound_play::SoundClient sc;
 
     //tell the action client that we want to spin a thread by default
-    LineDetect det;
-
-    ros::Subscriber image_sub = n.subscribe("/raspicam_node/image/compressed",
-                                            15, &LineDetect::imageCallback, &det);
-
-    ros::Publisher cmd_pub = n.advertise<geometry_msgs::Twist>
-            ("/cmd_vel", 10);
-
-    // Creating Publisher and subscriber
-
-
     MoveBaseClient ac("move_base", true);
 
     //wait for the action server to come up
@@ -62,7 +57,7 @@ int main(int argc, char **argv) {
 
 
     int status = PS2_1;
-//    status = LINE_FOLLOW;
+//    status = PS2_2;
 
     move_base_msgs::MoveBaseGoal goal_pose;
     //we'll send a goal to the robot to move 1 meter forward
@@ -71,9 +66,7 @@ int main(int argc, char **argv) {
     goal_pose.target_pose.pose.position.x = 0.66159;
     goal_pose.target_pose.pose.position.y = 3.9322;
     goal_pose.target_pose.pose.orientation.w = 1.0;
-    ros::Rate rate(15);
 
-    geometry_msgs::Twist velocity;
 
     while (ros::ok()) {
         if (status == PS2_1) {
@@ -94,22 +87,23 @@ int main(int argc, char **argv) {
 //
 
             goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 3.8452;
-            goal_pose.target_pose.pose.position.y = 4.9177;
-            goal_pose.target_pose.pose.orientation.z = 0.9586;
-            goal_pose.target_pose.pose.orientation.w = -0.2846;
+            goal_pose.target_pose.pose.position.x = 3.8497;
+            goal_pose.target_pose.pose.position.y = 4.9141;
+            goal_pose.target_pose.pose.orientation.z = 0.9347;
+            goal_pose.target_pose.pose.orientation.w = -0.3557;
             ROS_INFO("Sending goal");
             ac.sendGoal(goal_pose);
             ac.waitForResult();
             if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
                 ROS_INFO("PS2_1 succeed");
-                status = LINE_FOLLOW;
+                status = PS2_2;
             } else
                 ROS_INFO("PS2_1 failed");
         } else if (status == PS2_2) {
             goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 0.566 + 0.04 * 0.769588413377896;
-            goal_pose.target_pose.pose.position.y = 3.898 + 0.04 * 0.6385402681072606;
+            goal_pose.target_pose.pose.position.x = 0.65;
+            goal_pose.target_pose.pose.position.y = 3.92;
+
             goal_pose.target_pose.pose.orientation.z = 0.2935;
             goal_pose.target_pose.pose.orientation.w = 0.9557;
             ROS_INFO("Sending goal");
@@ -123,8 +117,8 @@ int main(int argc, char **argv) {
                 ROS_INFO("PS2_2 succeed");
                 status = MARKER1;
                 goal_pose.target_pose.header.stamp = ros::Time::now();
-                goal_pose.target_pose.pose.position.x = 0.566;
-                goal_pose.target_pose.pose.position.y = 3.898;
+                goal_pose.target_pose.pose.position.x = 1.6948;
+                goal_pose.target_pose.pose.position.y = 4.35448;
                 goal_pose.target_pose.pose.orientation.z = 0.2935;
                 goal_pose.target_pose.pose.orientation.w = 0.9557;
             } else {
@@ -134,10 +128,10 @@ int main(int argc, char **argv) {
 
         } else if (status == PS3) {
             goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 2.6322;
-            goal_pose.target_pose.pose.position.y = 0.2232;
-            goal_pose.target_pose.pose.orientation.z = 0.2935;
-            goal_pose.target_pose.pose.orientation.w = 0.9557;
+            goal_pose.target_pose.pose.position.x = 2.66;
+            goal_pose.target_pose.pose.position.y = 0.24;
+            goal_pose.target_pose.pose.orientation.z = 0.87098;
+            goal_pose.target_pose.pose.orientation.w = 0.49268;
             ROS_INFO("Sending goal");
             ac.sendGoal(goal_pose);
             ac.waitForResult();
@@ -150,8 +144,41 @@ int main(int argc, char **argv) {
                 ROS_INFO("PS3 failed");
         } else if (status == PS4) {
             goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 6.22;
-            goal_pose.target_pose.pose.position.y = 2.32;
+            goal_pose.target_pose.pose.position.x = 3.47453;
+            goal_pose.target_pose.pose.position.y = 0.725149;
+            goal_pose.target_pose.pose.orientation.z = 0.2678;
+            goal_pose.target_pose.pose.orientation.w = 0.9634;
+            ROS_INFO("Sending goal");
+            ac.sendGoal(goal_pose);
+            ac.waitForResult();
+            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+                ROS_INFO("PS4 succeed");
+                sc.say("PS4");
+            } else {
+                status = MARKER2;
+                ROS_INFO("PS4 failed");
+            }
+
+            goal_pose.target_pose.header.stamp = ros::Time::now();
+            goal_pose.target_pose.pose.position.x = 4.37396;
+            goal_pose.target_pose.pose.position.y = 1.89185;
+            goal_pose.target_pose.pose.orientation.z = 0.2678;
+            goal_pose.target_pose.pose.orientation.w = 0.9634;
+            ROS_INFO("Sending goal");
+            ac.sendGoal(goal_pose);
+            ac.waitForResult();
+            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+                ROS_INFO("PS4 succeed");
+                sc.say("PS4");
+            } else {
+                status = MARKER2;
+                ROS_INFO("PS4 failed");
+            }
+
+
+            goal_pose.target_pose.header.stamp = ros::Time::now();
+            goal_pose.target_pose.pose.position.x = 6.18;
+            goal_pose.target_pose.pose.position.y = 2.35;
             goal_pose.target_pose.pose.orientation.z = 0.2935;
             goal_pose.target_pose.pose.orientation.w = 0.9557;
             ROS_INFO("Sending goal");
@@ -161,9 +188,12 @@ int main(int argc, char **argv) {
                 ROS_INFO("PS4 succeed");
                 sc.say("PS4");
                 break;
-            } else
+            } else {
+                status = MARKER2;
                 ROS_INFO("PS4 failed");
-        } else if (status == MARKER1) {
+            }
+        }
+        else if (status == MARKER1) {
             boost::shared_ptr<ar_track_alvar_msgs::AlvarMarkers const> msg;
             msg = ros::topic::waitForMessage<ar_track_alvar_msgs::AlvarMarkers>("/ar_pose_marker", ros::Duration(1.0));
             ROS_INFO("receive msg");
@@ -200,8 +230,8 @@ int main(int argc, char **argv) {
 //2.4744 1.1521 0.3529 0.9356
 
             goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 2.1785 - 0.0 * 0.769588413377896;
-            goal_pose.target_pose.pose.position.y = 0.9973 - 0.0 * 0.6385402681072606;
+            goal_pose.target_pose.pose.position.x = 2.1785;
+            goal_pose.target_pose.pose.position.y = 0.9973;
             goal_pose.target_pose.pose.orientation.z = 0.3529;
             goal_pose.target_pose.pose.orientation.w = 0.9356;
 
@@ -230,25 +260,6 @@ int main(int argc, char **argv) {
                 }
 //                status = PS3;
             }
-        } else if (status == LINE_FOLLOW) {
-            if (!det.img.empty()) {
-                // Perform image processing
-//            ROS_INFO("read image");
-                det.img_filt = det.Gauss(det.img);
-                det.colorthresh(det.img_filt);
-                double dx = det.dx;
-                // Publish direction message
-//                dirPub.publish(msg);
-                if (dx > 50) {
-                    dx = 0;
-                }
-                vel_cmd(velocity, cmd_pub, dx);
-            }
-            if (distance > 0.5) {
-                distance = 0;
-                status = PS2_2;
-            }
-            rate.sleep();
         }
 
         ros::spinOnce();

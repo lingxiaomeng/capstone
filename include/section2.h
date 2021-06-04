@@ -2,8 +2,8 @@
 // Created by turtlepc-01 on 2021/5/26.
 //
 
-#ifndef SRC_GOAL_H
-#define SRC_GOAL_H
+#ifndef SRC_SECTION2_H
+#define SRC_SECTION2_H
 
 
 int PS2_1 = 1;
@@ -26,4 +26,4 @@ class goal {
 };
 
 
-#endif //SRC_GOAL_H
+#endif //SRC_SECTION2_H

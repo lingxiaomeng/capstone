@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
-#include <goal.h>
+#include <section2.h>
 #include <ar_track_alvar_msgs/AlvarMarkers.h>
 #include <sound_play.h>
 
@@ -117,8 +117,8 @@ int main(int argc, char **argv) {
                 ROS_INFO("PS2_2 succeed");
                 status = MARKER1;
                 goal_pose.target_pose.header.stamp = ros::Time::now();
-                goal_pose.target_pose.pose.position.x = 0.566;
-                goal_pose.target_pose.pose.position.y = 3.898;
+                goal_pose.target_pose.pose.position.x = 1.6948;
+                goal_pose.target_pose.pose.position.y = 4.35448;
                 goal_pose.target_pose.pose.orientation.z = 0.2935;
                 goal_pose.target_pose.pose.orientation.w = 0.9557;
             } else {
@@ -130,8 +130,8 @@ int main(int argc, char **argv) {
             goal_pose.target_pose.header.stamp = ros::Time::now();
             goal_pose.target_pose.pose.position.x = 2.66;
             goal_pose.target_pose.pose.position.y = 0.24;
-            goal_pose.target_pose.pose.orientation.z = 0.2935;
-            goal_pose.target_pose.pose.orientation.w = 0.9557;
+            goal_pose.target_pose.pose.orientation.z = 0.87098;
+            goal_pose.target_pose.pose.orientation.w = 0.49268;
             ROS_INFO("Sending goal");
             ac.sendGoal(goal_pose);
             ac.waitForResult();
@@ -142,57 +142,58 @@ int main(int argc, char **argv) {
                 status = MARKER2;
             } else
                 ROS_INFO("PS3 failed");
-        } else if (status == PS4) {
-            goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 3.47453;
-            goal_pose.target_pose.pose.position.y = 0.725149;
-            goal_pose.target_pose.pose.orientation.z = 0.2678;
-            goal_pose.target_pose.pose.orientation.w = 0.9634;
-            ROS_INFO("Sending goal");
-            ac.sendGoal(goal_pose);
-            ac.waitForResult();
-            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-                ROS_INFO("PS4 succeed");
-                sc.say("PS4");
-            } else {
-                status = MARKER2;
-                ROS_INFO("PS4 failed");
-            }
-
-            goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 4.37396;
-            goal_pose.target_pose.pose.position.y = 1.89185;
-            goal_pose.target_pose.pose.orientation.z = 0.2678;
-            goal_pose.target_pose.pose.orientation.w = 0.9634;
-            ROS_INFO("Sending goal");
-            ac.sendGoal(goal_pose);
-            ac.waitForResult();
-            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-                ROS_INFO("PS4 succeed");
-                sc.say("PS4");
-            } else {
-                status = MARKER2;
-                ROS_INFO("PS4 failed");
-            }
-
-
-            goal_pose.target_pose.header.stamp = ros::Time::now();
-            goal_pose.target_pose.pose.position.x = 6.18;
-            goal_pose.target_pose.pose.position.y = 2.35;
-            goal_pose.target_pose.pose.orientation.z = 0.2935;
-            goal_pose.target_pose.pose.orientation.w = 0.9557;
-            ROS_INFO("Sending goal");
-            ac.sendGoal(goal_pose);
-            ac.waitForResult();
-            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-                ROS_INFO("PS4 succeed");
-                sc.say("PS4");
-                break;
-            } else {
-                status = MARKER2;
-                ROS_INFO("PS4 failed");
-            }
-        } else if (status == MARKER1) {
+//        } else if (status == PS4) {
+//            goal_pose.target_pose.header.stamp = ros::Time::now();
+//            goal_pose.target_pose.pose.position.x = 3.47453;
+//            goal_pose.target_pose.pose.position.y = 0.725149;
+//            goal_pose.target_pose.pose.orientation.z = 0.2678;
+//            goal_pose.target_pose.pose.orientation.w = 0.9634;
+//            ROS_INFO("Sending goal");
+//            ac.sendGoal(goal_pose);
+//            ac.waitForResult();
+//            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+//                ROS_INFO("PS4 succeed");
+//                sc.say("PS4");
+//            } else {
+//                status = MARKER2;
+//                ROS_INFO("PS4 failed");
+//            }
+//
+//            goal_pose.target_pose.header.stamp = ros::Time::now();
+//            goal_pose.target_pose.pose.position.x = 4.37396;
+//            goal_pose.target_pose.pose.position.y = 1.89185;
+//            goal_pose.target_pose.pose.orientation.z = 0.2678;
+//            goal_pose.target_pose.pose.orientation.w = 0.9634;
+//            ROS_INFO("Sending goal");
+//            ac.sendGoal(goal_pose);
+//            ac.waitForResult();
+//            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+//                ROS_INFO("PS4 succeed");
+//                sc.say("PS4");
+//            } else {
+//                status = MARKER2;
+//                ROS_INFO("PS4 failed");
+//            }
+//
+//
+//            goal_pose.target_pose.header.stamp = ros::Time::now();
+//            goal_pose.target_pose.pose.position.x = 6.18;
+//            goal_pose.target_pose.pose.position.y = 2.35;
+//            goal_pose.target_pose.pose.orientation.z = 0.2935;
+//            goal_pose.target_pose.pose.orientation.w = 0.9557;
+//            ROS_INFO("Sending goal");
+//            ac.sendGoal(goal_pose);
+//            ac.waitForResult();
+//            if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+//                ROS_INFO("PS4 succeed");
+//                sc.say("PS4");
+//                break;
+//            } else {
+//                status = MARKER2;
+//                ROS_INFO("PS4 failed");
+//            }
+        }
+        else if (status == MARKER1) {
             boost::shared_ptr<ar_track_alvar_msgs::AlvarMarkers const> msg;
             msg = ros::topic::waitForMessage<ar_track_alvar_msgs::AlvarMarkers>("/ar_pose_marker", ros::Duration(1.0));
             ROS_INFO("receive msg");
