@@ -103,7 +103,6 @@ int main(int argc, char **argv) {
                     double dis = marker.pose.pose.position.z;
                     ROS_INFO("find marker id: %d, distance %f", id, dis);
                     if (dis < 5) {
-                        //            say = false;
                         std::string words = std::to_string(id);
                         sc.say(words);
                         n++;
@@ -146,7 +145,6 @@ int main(int argc, char **argv) {
                     double dis = marker.pose.pose.position.z;
                     ROS_INFO("find marker id: %d, distance %f", id, dis);
                     if (dis < 2) {
-                        //            say = false;
                         std::string words = std::to_string(id);
                         sc.say(words);
                         status = PS2_2;
