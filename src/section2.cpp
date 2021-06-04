@@ -7,39 +7,6 @@
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
-
-void get_pose(const ar_track_alvar_msgs::AlvarMarkers &req) {
-    timer++;
-    if (!req.markers.empty()) {
-        ROS_INFO("find marker");
-        double min_distance = 1e7;
-        int last_marker_id = marker_id;
-        for (auto &marker : req.markers) {
-            int id = marker.id;
-            double dis = marker.pose.pose.position.z;
-            ROS_INFO("find marker id: %d, distance %f", id, dis);
-            if (dis < min_distance) {
-                min_distance = dis;
-//                if (min_distance < 5) {
-                marker_id = id;
-//                }
-            }
-        }
-        if (timer > 30) {
-            if (min_distance < 2) {
-//            ROS_INFO("find marker id %d", marker_id);
-                say = true;
-                timer = 0;
-            }
-        } else {
-            say = false;
-        }
-    }
-//    turtlebot::say = false;
-//    marker_id = -1;
-}
-
-
 int main(int argc, char **argv) {
     ros::init(argc, argv, "simple_navigation_goals");
     ros::NodeHandle n;
