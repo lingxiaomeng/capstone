@@ -153,7 +153,6 @@ int main(int argc, char **argv) {
             ac.waitForResult();
             if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
                 ROS_INFO("PS4 succeed");
-                sc.say("PS4");
             } else {
                 status = MARKER2;
                 ROS_INFO("PS4 failed");
@@ -169,7 +168,6 @@ int main(int argc, char **argv) {
             ac.waitForResult();
             if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
                 ROS_INFO("PS4 succeed");
-                sc.say("PS4");
             } else {
                 status = MARKER2;
                 ROS_INFO("PS4 failed");
