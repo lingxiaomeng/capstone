@@ -1,5 +1,0 @@
-<launch>
-
-<test test-name="test_velocity"  pkg="line_follower_turtlebot"  type="test_velocity"  cwd="node"/>
-
-</launch>
